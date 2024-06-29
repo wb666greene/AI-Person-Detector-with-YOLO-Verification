@@ -1,0 +1,437 @@
+# commands to setup for running AI person deteciton
+# For Ubuntu 20.04 with suitable OpenVINO version, (this version drops original NCS support)
+
+
+sudo apt-get install build-essential ssh git curl samba samba-common-bin python3-dev espeak
+
+################################################################################################################################
+# Ubuntu 20.04 has opencv 4.2.0 it works well!
+# easiest way to install, libopencv-dev brings in most everything as a dependency
+   sudo apt install libopencv-dev libgstreamer-opencv1.0-0 python3-opencv opencv-doc python3-pip python-is-python3
+
+
+# install mosquitto:
+sudo apt-get install mosquitto mosquitto-dev mosquitto-clients
+
+
+# install MQTT for python and some required modules
+sudo -H pip3 install paho-mqtt imutils requests
+
+
+# Simplifies things to create a user ai and log in as that user.
+#  use your default username if it is not "ai",
+
+# Optional, make Ubuntu sudo behave like Raspbian, and allow Reboot and PowerOff UI buttons to work:
+sudo visudo
+# add after the last line of the file (#includedir /etc/sudoers.d):
+ai ALL=(ALL) NOPASSWD:ALL
+
+# generally a good idea to write the detection images to a different physical drive (USB stick etc.)
+# mount external drive on boot
+sudo nano /etc/fstab
+# add entry like this. changing /dev and mount point as desired (here AI is the USB stick ext4 label name):
+/dev/sdb1	/media/ai/AI	ext4	defaults,nofail,noatime	0	3
+# Have to make directory to mount the stick on:
+sudo mkdir /media/ai/AI
+sudo chown ai.ai /media/ai/AI
+#
+# then make a symlink in /home/ai:
+ln -s /media/ai/AI detect
+
+
+# very worthwhile for maintaining the system
+sudo apt-get install samba
+# edit config:
+sudo nano /etc/samba/smb.conf
+# make sure this is in the global section:
+[global]
+    mangled names = no
+    follow symlinks = yes
+    wide links = yes
+    unix extensions = no
+    # Ubuntu 20.04 seems to require these:
+    server min protocol = NT1
+    client min protocol = NT1
+#
+# Make the homes section be like this:
+[homes]
+   comment = Home Directories
+   browseable = yes
+   read only = no
+   writeable = yes
+   create mask = 0775
+   directory mask = 0775
+#
+# set samba password:
+sudo smbpasswd -a ai
+
+
+
+#### install node-red, choose N for Pi specific modules:
+bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)
+# You may want to run   node-red admin init
+# to configure your initial options and settings.
+node-red admin init
+ould you like to customise the settings now (y/N) ?  
+##### I answered: y
+=====================================
+This tool will help you create a Node-RED settings file.
+
+✔ Settings file · /home/ai/.node-red/settings.js
+
+User Security
+=============
+✔ Do you want to setup user security? · No
+
+Projects
+========
+The Projects feature allows you to version control your flow using a local git repository.
+
+✔ Do you want to enable the Projects feature? · Yes
+✔ What project workflow do you want to use? · manual - you must manually commit changes
+
+Editor settings
+===============
+✔ Select a theme for the editor. To use any theme other than "default", you will need to install @node-red-contrib-themes/theme-collection in your Node-RED user directory. · default
+
+✔ Select the text editor component to use in the Node-RED Editor · monaco (default)
+
+Node settings
+=============
+✔ Allow Function nodes to load external modules? (functionExternalModules) · Yes
+
+
+###### then in node-red do Manage Pallet to install:
+#  node-red-dashboard node-red-node-base64 node-red-contrib-image-output node-red-node-email
+# or do (easier, but doing it in node-red can help you get the hang of none-red):
+cd ~/.node-red
+npm i node-red-dashboard node-red-node-email node-red-contrib-image-output node-red-node-base64
+
+# lately something has been going wrong with the node-red install/upgrade script.  If Manage Pallet or npm i fails:
+# use the username you setup on installation, I used ai
+sudo chown -R ai.ai .npm
+##### Did not have this issue with fresh 20.04 installation for GTX950
+
+# start and stop node-red to create default settings.js file
+node-red-start
+# type ctrl-C in terminal where node-red-start was run
+node-red-stop
+
+# node-red defaults to storing flows in flows_<hostname>.json
+# since I like to "clone" the system and then change the hostname
+# this causes loss of any installed flows, to fix:
+nano .node-red/settings.js
+# uncomment  (7SEP2022wbk fresh install using node-red admin init already had it uncommented)
+flowFile: 'flows.json',
+# change in function editorTheme: { Projects{} }
+enabled: false, to: enabled: true,
+# exit nano Ctrl-X Y
+
+# make node-red start automatically on boot
+sudo systemctl enable nodered.service
+
+# My "in alert region" filter needs an extra JavaScript module that is not available in node-red by default.
+# Install point-in-polygon with:
+cd ~/.node-red
+npm install point-in-polygon
+# var inside = require('point-in-polygon');   // the normal nodejs way doesn't work in node-red.
+# So must edit .node-red/settings.js and add (around lin 432 on new installs):
+      functionGlobalContext: {
+          insidePolygon:require('point-in-polygon'),
+      }
+# Requires a node-red restart when finished.
+
+# Optional for onvif_discover.js to scan subnet for Onvif camera URLs
+npm i node-onvif
+####
+
+
+
+### install TPU support, instructions from: https://coral.ai/docs/accelerator/get-started/#requirements
+echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install libedgetpu1-std
+# goofy, but seems to mess up if you don't do -std first.
+sudo apt-get install libedgetpu1-max
+# install pycoral and tflite:
+sudo apt-get install python3-pycoral
+
+# If using the mPCI-e & m.2 TPUs:
+sudo apt-get install gasket-dkms
+sudo sh -c "echo 'SUBSYSTEM==\"apex\", MODE=\"0660\", GROUP=\"apex\"' >> /etc/udev/rules.d/65-apex.rules"
+sudo groupadd apex
+#!!! Make sure the following command is being done as user ai, not as sudo -i
+sudo adduser $USER apex
+# Now reboot the system.
+# Once rebooted, verify that the accelerator module is detected:
+lspci -nn | grep 089a
+# You should see something like this:
+# 03:00.0 System peripheral: Device 1ac1:089a
+# The 03 number and System peripheral name might be different, because those are host-system specific, but as long as you see a device listed with 089a then you're okay to proceed.
+
+# Also verify that the PCIe driver is loaded:
+ls /dev/apex_0
+# You should simply see the name repeated back:
+# /dev/apex_0
+###
+
+
+
+######## Misc tips:
+## Ubuntu 20.04 on Intel sometimes has issues with espeak working in terminal but not node-red exec node.
+# Add this to /etc/modprobe.d/alsa-base.conf (or default.conf in there is no alsa config file)
+# Need to reboot for this to take effect.
+options snd_hda_intel index=1
+##
+
+## To get seconds to display on the Mate 20.04 clock applet:
+gsettings set com.canonical.indicator.datetime show-seconds true
+#  to get 0-24 time display instead of AM/PM:
+gsettings set com.canonical.indicator.datetime time-format 24-hour
+########
+
+
+
+
+#### OpenVINO apt installation, if you don't plan to use or study openVINO, can just install the runtime:
+# note R2020.3 is the last release that supports the original NCS, and it is not available for 20.04, 18.04 is newest supported.
+# Download the public key from https://apt.repos.intel.com/openvino/2021/GPG-PUB-KEY-INTEL-OPENVINO-2021
+wget https://apt.repos.intel.com/openvino/2021/GPG-PUB-KEY-INTEL-OPENVINO-2021
+sudo apt-key add ./GPG-PUB-KEY-INTEL-OPENVINO-2021
+echo "deb https://apt.repos.intel.com/openvino/2021 all main" | sudo tee /etc/apt/sources.list.d/intel-openvino-2021.list
+### the above fails now since the GPG key has expired, doing these steps seems to get it working again:
+wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+echo "deb https://apt.repos.intel.com/openvino/2023 ubuntu20 main" | sudo tee /etc/apt/sources.list.d/intel-openvino-2023.list
+#
+sudo apt update
+sudo apt-get install intel-openvino-dev-ubuntu20-2021.3.394
+#
+# create symlink to use OpenVINO_2021.3
+ln -s /opt/intel/openvino_2021.3.394/bin/setupvars.sh $HOME/useOpenVINO_2021.3.394
+## Issue with R2021.1 and R2021.2 and R2021.3
+# sourcing the the symlink didn't work with 2021.1, but does with 2020.3
+# fixed it by commenting out the first three lines of the script:
+# #SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# #BASE_DIR="$( dirname "$SCRIPT_DIR" )"
+# #INSTALLDIR="${BASE_DIR}"
+# and adding:
+INSTALLDIR="${INTEL_OPENVINO_DIR:-/opt/intel/openvino_2021.3.394}"
+# afterwards, source useOpenVINO_2021.3.394 works.
+
+#### can stop here if not using NCS2, Intel integrated graphics, or Model Optimizer
+# Intel GPU, doesn't appear to work on AtomicPi and many other low-end CPUs with Intel graphics built in.
+cd /opt/intel/openvino_2021/install_dependencies/
+sudo -E su
+./install_NEO_OCL_driver.sh
+sudo usermod -a -G video,render "$(whoami)"
+####
+#####
+# Movidius NCS2 USB3 stick
+sudo usermod -a -G users "$(whoami)"
+# log out and log back in
+sudo cp /opt/intel/openvino_2021/inference_engine/external/97-myriad-usbboot.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+sudo ldconfig
+source useOpenVINO_2021.3.394
+#####
+#
+#Model Optimizer -- this is only needed if you need to "convert" a model, I generally only do it for my development system, not the IOT targets.
+## on Ubuntu-Mate 20.04 I needed to do (after source useOpenVINO):
+pip3 install numpy==1.19.2
+cd /opt/intel/openvino_2021/deployment_tools/model_optimizer/install_prerequisites
+sudo ./install_prerequisites.sh
+
+
+##### I verified the installation as suggested in the OpenVINO docs
+### Don't really need to do this unless you want to use C++ instead of python3
+# https://docs.openvinotoolkit.org/latest/openvino_docs_install_guides_installing_openvino_linux.html
+# by doing, verifies the C/C++ setup, not needed for Python.
+cd /opt/intel/openvino_2021/deployment_tools/demo
+./demo_squeezenet_download_convert_run.sh
+# installed, downloaded and compiled a lot of stuff and eventually ran, outputting to match the doc:
+
+[100%] Built target classification_sample_async
+
+###################################################
+
+Run Inference Engine classification sample
+
+Run ./classification_sample_async -d CPU -i /opt/intel/openvino_2021/deployment_tools/demo/car.png -m $HOME/openvino_models/ir/public/squeezenet1.1/FP16/squeezenet1.1.xml
+
+[ INFO ] InferenceEngine:
+	API version ............ 2.1
+	Build .................. 2021.1.0-1237-bece22ac675-releases/2021/1
+	Description ....... API
+[ INFO ] Parsing input parameters
+[ INFO ] Parsing input parameters
+[ INFO ] Files were added: 1
+[ INFO ]     /opt/intel/openvino_2021/deployment_tools/demo/car.png
+[ INFO ] Creating Inference Engine
+	CPU
+	MKLDNNPlugin version ......... 2.1
+	Build ........... 2021.1.0-1237-bece22ac675-releases/2021/1
+
+[ INFO ] Loading network files
+[ INFO ] Preparing input blobs
+[ WARNING ] Image is resized from (787, 259) to (227, 227)
+[ INFO ] Batch size is 1
+[ INFO ] Loading model to the device
+[ INFO ] Create infer request
+[ INFO ] Start inference (10 asynchronous executions)
+[ INFO ] Completed 1 async request execution
+[ INFO ] Completed 2 async request execution
+[ INFO ] Completed 3 async request execution
+[ INFO ] Completed 4 async request execution
+[ INFO ] Completed 5 async request execution
+[ INFO ] Completed 6 async request execution
+[ INFO ] Completed 7 async request execution
+[ INFO ] Completed 8 async request execution
+[ INFO ] Completed 9 async request execution
+[ INFO ] Completed 10 async request execution
+[ INFO ] Processing output blobs
+
+Top 10 results:
+
+Image /opt/intel/openvino_2021/deployment_tools/demo/car.png
+
+classid probability label
+------- ----------- -----
+817     0.6853042   sports car, sport car
+479     0.1835186   car wheel
+511     0.0917199   convertible
+436     0.0200693   beach wagon, station wagon, wagon, estate car, beach waggon, station waggon, waggon
+751     0.0069604   racer, race car, racing car
+656     0.0044177   minivan
+717     0.0024739   pickup, pickup truck
+581     0.0017788   grille, radiator grille
+468     0.0013083   cab, hack, taxi, taxicab
+661     0.0007443   Model T
+
+[ INFO ] Execution successful
+
+[ INFO ] This sample is an API example, for any performance measurements please use the dedicated benchmark_app tool
+
+###################################################
+
+Demo completed successfully.
+
+
+# Plug in an NCS2 stick, the original NCS is not supported in R2021.1:
+cd $HOME/inference_engine_samples_build/intel64/Release
+./classification_sample_async -d MYRIAD -i /opt/intel/openvino_2021/deployment_tools/demo/car.png -m $HOME/openvino_models/ir/public/squeezenet1.1/FP16/squeezenet1.1.xml
+# should get approximately the same results as above but using the NCS2 accelerator instead of the CPU for the inference.
+
+# try the GPU:
+./classification_sample_async -d GPU -i /opt/intel/openvino_2021/deployment_tools/demo/car.png -m $HOME/openvino_models/ir/public/squeezenet1.1/FP16/squeezenet1.1.xml
+#GPU, doesn't appear to work on AtomicPi:
+[ INFO ] Creating Inference Engine
+[ ERROR ] Failed to create plugin /opt/intel/openvino_2021.1.110/deployment_tools/inference_engine/lib/intel64/libclDNNPlugin.so for device GPU Please, check your environment
+[CLDNN ERROR]. clGetPlatformIDs error -1001
+# It does work on my FX705GM Ubuntu-Mate 20.04 system
+
+# the security barrier demo needs to be run in the GUI unless ssh -X works.
+cd /opt/intel/openvino_2021/deployment_tools/demo
+./demo_security_barrier_camera.sh
+#
+cd $HOME/inference_engine_demos_build/intel64/Release
+# using the CPU ~3.6 fps on AtomicPi,  43.2 fps on FX705gm
+./security_barrier_camera_demo -d CPU -d_va CPU -d_lpr CPU -i /opt/intel/openvino/deployment_tools/demo/car_1.bmp -m $HOME/openvino_models/ir/intel/vehicle-license-plate-detection-barrier-0106/FP16/vehicle-license-plate-detection-barrier-0106.xml -m_lpr $HOME/openvino_models/ir/intel/license-plate-recognition-barrier-0001/FP16/license-plate-recognition-barrier-0001.xml -m_va $HOME/openvino_models/ir/intel/vehicle-attributes-recognition-barrier-0039/FP16/vehicle-attributes-recognition-barrier-0039.xml
+#
+# using MYRIAD with NCS ~13 fps, with NCS2 ~22 fps on AtomicPi, bummer its GPU is not a supported version.
+# NCS2 with OpenVINO_2021.1 on FX705GM ~25.5 fps, ~21 fps on AtomicPi.
+./security_barrier_camera_demo -d MYRIAD -d_va MYRIAD -d_lpr MYRIAD -i /opt/intel/openvino/deployment_tools/demo/car_1.bmp -m $HOME/openvino_models/ir/intel/vehicle-license-plate-detection-barrier-0106/FP16/vehicle-license-plate-detection-barrier-0106.xml -m_lpr $HOME/openvino_models/ir/intel/license-plate-recognition-barrier-0001/FP16/license-plate-recognition-barrier-0001.xml -m_va $HOME/openvino_models/ir/intel/vehicle-attributes-recognition-barrier-0039/FP16/vehicle-attributes-recognition-barrier-0039.xml
+#
+# GPU on FX705GM ~83.3 fps! Loding the models into the GPU plugin seems really slow, but impressive performance.
+./security_barrier_camera_demo -d GPU -d_va GPU -d_lpr GPU -i /opt/intel/openvino/deployment_tools/demo/car_1.bmp -m $HOME/openvino_models/ir/intel/vehicle-license-plate-detection-barrier-0106/FP16/vehicle-license-plate-detection-barrier-0106.xml -m_lpr $HOME/openvino_models/ir/intel/license-plate-recognition-barrier-0001/FP16/license-plate-recognition-barrier-0001.xml -m_va $HOME/openvino_models/ir/intel/vehicle-attributes-recognition-barrier-0039/FP16/vehicle-attributes-recognition-barrier-0039.xml
+#####
+
+
+
+
+
+
+######### setup cuda and build the darknet libraries for yolov4 verification.
+## I think it is safest to use the Ubuntu repo version of the nvidia driver and install cuda from the *.run file
+## and to install cudnn from the *.tgz file and manally copy the files to /usr/local/cuda_M.n include & lib directories
+## and manually edit .bashrc:
+## for cuda 11.3, i.3 M == 11,  n ==3
+## export PATH=/usr/local/cuda-11.3/bin:$PATH
+##export LD_LIBRARY_PATH=/usr/local/cuda-11.3/lib64
+
+# install the repo cuda tools to match the driver
+sudo apt install nvidia-cuda-dev
+
+# Install cuda from the dowlaoded *.run file
+## from the Downloads directory with the *.run file:
+## try to match the runfile cuda version with the driver version, ultimately can be a guess.
+## make the *.run file executable, then:
+sudo ./cuda_11.4.4_470.82.01_linux.run
+
+## choose continue when it reports package manager version of the driver found.
+# accept the EULA
+# !IMPORTANT!  Unselect [X] Driver option! (hit the spacebar)
+# The other selections are fine left selected.
+# Arrow key down to select Install and press Enter key.
+# window will go away and after a few minutes should get this message:
+===========
+= Summary =
+===========
+
+Driver:   Not Selected
+Toolkit:  Installed in /usr/local/cuda-11.4/
+Samples:  Installed in /home/wally/, but missing recommended libraries
+
+Please make sure that
+ -   PATH includes /usr/local/cuda-11.4/bin
+ -   LD_LIBRARY_PATH includes /usr/local/cuda-11.4/lib64, or, add /usr/local/cuda-11.4/lib64 to /etc/ld.so.conf and run ldconfig as root
+
+To uninstall the CUDA Toolkit, run cuda-uninstaller in /usr/local/cuda-11.4/bin
+***WARNING: Incomplete installation! This installation did not install the CUDA Driver. A driver of version at least 470.00 is required for CUDA 11.4 functionality to work.
+To install the driver using this installer, run the following command, replacing <CudaInstaller> with the name of this run file:
+    sudo <CudaInstaller>.run --silent --driver
+
+Logfile is /var/log/cuda-installer.log
+
+## some comments about the confusing message that was printed
+# Ignore the warning about not having installed the CUDA driver, presumably version 4.70.xx was installed from the repos.
+# Edit .bashrc to add:
+## for cuda 11.4
+export PATH=/usr/local/cuda-11.4/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-11.4/lib64
+
+
+
+## next install the CUDNN.
+## extract the archive from the file manager and copy the include and lib directories to /usr/local
+cd cudnn-linux-x86_64-8.4.1.50_cuda11.6-archive
+sudo cp -a include/* /usr/local/cuda-11.4/include
+sudo cp -a lib/* /usr/local/cuda-11.4/lib64
+
+
+# open a new terminal window and try to build darknet, after copying it from the USB stick.
+cd $HOME/darkner-AlexeyAB
+# edit the Makefile or copy one I've edited
+mv Makefile Makefile.old
+cp Makefile.GTX950 Makefile
+make clean
+make
+
+## this throws a ton of "warnings" but they can be ignored, 
+## as long as no errors stop the build the darknet library should be built.
+# test it with this command:
+python3 darknet_images.py --input data
+
+# On my i7 with RTX2060 I get:
+Loaded - names_list: data/coco.names, classes = 80 
+Inference (mS): 465
+Inference (mS): 38
+Inference (mS): 36
+Inference (mS): 38
+Inference (mS): 36
+Inference (mS): 35
+# note the timing for the first Inference apparently includes library loading/initialization time, the remainder represent the real performance
+#########
+

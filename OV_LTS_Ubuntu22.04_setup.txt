@@ -1,0 +1,102 @@
+5FEB2024wbk
+These are my notes for a virgin installation of Ubuntu 22.04 and installation of OpenVINO LTS release 
+for using Intel integraded GPU for yolo verification.  Motivated by 
+https://igor.technology/installing-coral-usb-accelearator-python-3-10-ubuntu-22/
+Which alows using the TPU on system python 3.10 eliminating the need or virtual environments.
+
+0) Install Ubuntu 22.04,  I used Ubuntu-Mate.  Customize it as you see fit, and use your username
+where I have "ai" and your host name where I have "YouSeeX1"
+
+1) Install ssh, not required but makes it easier by using remote access for most all the other setup.
+sudo apt install ssh
+
+2) Log in remotely
+ssh ai@YouSeeX1
+or open a terminal window on the YouSeeX1 box.
+
+3) Install needed packages:
+sudo apt install git curl samba python3-dev python3-pip espeak mosquitto mosquitto-dev mosquitto-clients
+
+4) Configue samba file sharing.  Since this is to be an "appliance" this is the way to look at
+AI detection files, edit samba config:
+sudo nano /etc/samba/smb.conf
+# make sure this is in the global section:
+[global]
+    mangled names = no
+    follow symlinks = yes
+    wide links = yes
+    unix extensions = no
+    # Ubuntu 20.04 seems to require these:
+    server min protocol = NT1
+    client min protocol = NT1
+#
+# Make the homes section be like this:
+[homes]
+   comment = Home Directories
+   browseable = yes
+   read only = no
+   writeable = yes
+   create mask = 0775
+   directory mask = 0775
+#
+# set samba password, I use the ai login password for simplicity:
+sudo smbpasswd -a ai
+
+5) It is best to put AI detections on a seperate drive or USB stick, but not necessary,
+I had to mount the external device to create the /media/ai directory where it will mount,
+then unmount it and do:
+sudo mkdir /media/ai/AIdetect
+sudo chown ai.ai /media/ai/AIdetect
+# then edit /etc/fstab so it mounts on bootup:
+sudo nano /etc/fstab
+# add entry like this. changing /dev and mount point as desired (here AIdetect is the drive's ext4 label name)
+# /dev/sda1 is usually the name of a USB stick for Linux system on eEMC, SD card or NVMe drive, 
+#/dev/sda1	/media/ai/AIdetect	ext4	defaults,nofail,noatime	0	3
+# Hint, use the Linux "Disks" utility programe to get the device name of the partition to mount.
+# My YouSeeToo-X1 system is booting from eEMC and using NVMe drive to store images:
+/dev/nvme0n1p1 /media/ai/AIdetect	ext4	defaults,nofail,noatime	0	3
+#
+# then make a symlink in /home/ai:
+ln -s /media/ai/AIdetect detect
+# reboot and verify the external drive is mounted.
+
+6)Install TPU support.
+# add the "current" coral repo
+echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt update
+sudo apt install libedgetpu1-std
+#
+# If you want TPU to run full speed:
+sudo apt install libedgetpu1-max
+# if you want to use the M.2, mPCIe, etc. TPUs:
+sudo apt install gasket-dkms
+# Note: the kdms build fails on kernel v6.+ what worked to fix it is in
+# the file: Kernel_v6_gasket-dkms_fix.txt
+sudo sh -c "echo 'SUBSYSTEM==\"apex\", MODE=\"0660\", GROUP=\"apex\"' >> /etc/udev/rules.d/65-apex.rules"
+sudo groupadd apex
+#!!! Make sure the following command is being done as ai user, not as sudo -i
+sudo adduser $USER apex
+# Now reboot the system.
+# Once rebooted, verify that the accelerator module is detected:
+lspci -nn | grep 089a
+# You should see something like this:
+# 03:00.0 System peripheral: Device 1ac1:089a
+# The 03 number and System peripheral name might be different, because those are host-system specific, 
+# but as long as you see a device listed with 089a then you're okay to proceed.
+#
+# Also verify that the PCIe driver is loaded:
+ls /dev/apex_0
+# You should simply see the name repeated back:
+# /dev/apex_0
+
+7) Install python pycoral.  This article showed me how:
+https://igor.technology/installing-coral-usb-accelearator-python-3-10-ubuntu-22/
+by downloading the python "wheel" files for python10 from:
+https://github.com/hjonnala/snippets/tree/main/wheels/python3.10
+I downloaded them to the folder TPU_python3.10 do:
+pip install TPU_python3.10/tflite_runtime-2.5.0.post1-cp310-cp310-linux_x86_64.whl
+pip install TPU_python3.10/pycoral-2.0.0-cp310-cp310-linux_x86_64.whl
+
+
+

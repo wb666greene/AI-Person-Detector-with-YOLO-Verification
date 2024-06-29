@@ -1,0 +1,238 @@
+### Install some extra packages I used
+sudo apt-get install git curl samba python3-dev espeak
+#
+# install mosquitto to commubnicate with node-red:
+sudo apt-get install mosquitto mosquitto-dev mosquitto-clients
+
+
+
+### very worthwhile for maintaining the system
+sudo apt-get install samba
+# edit config:
+sudo nano /etc/samba/smb.conf
+# make sure this is in the global section:
+[global]
+    mangled names = no
+    follow symlinks = yes
+    wide links = yes
+    unix extensions = no
+    # Ubuntu 20.04 seems to require these:
+    server min protocol = NT1
+    client min protocol = NT1
+#
+# Make the homes section be like this:
+[homes]
+   comment = Home Directories
+   browseable = yes
+   read only = no
+   writeable = yes
+   create mask = 0775
+   directory mask = 0775
+#
+# set samba password:
+sudo smbpasswd -a YOUR_USER_NAME
+
+
+
+### Generally a good idea to write the detection images to a different physical drive (USB stick etc.)
+# mount external drive on boot
+sudo nano /etc/fstab
+# add entry like this. changing /dev and mount point as desired (here AIdetect is the USB stick ext4 label name):
+/dev/sda1	/media/ai/AIdetect	ext4	defaults,nofail,noatime	0	3
+#
+# then make a symlink in /home/ai:
+ln -s /media/ai/AIdetect detect
+
+
+### Install TPU support
+# add the "current" coral repo
+echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install libedgetpu1-std
+#
+# if you want USB TPU to run full speed:
+sudo apt-get install libedgetpu1-max
+#
+#
+# if you want to use the M.2, mPCIe TPUs
+sudo apt-get install gasket-dkms
+sudo sh -c "echo 'SUBSYSTEM==\"apex\", MODE=\"0660\", GROUP=\"apex\"' >> /etc/udev/rules.d/65-apex.rules"
+sudo groupadd apex
+#!!! Make sure the following command is being done as ai user, not as sudo -i
+sudo adduser $USER apex
+# Now reboot the system.
+# Once rebooted, verify that the accelerator module is detected:
+lspci -nn | grep 089a
+# You should see something like this:
+# 03:00.0 System peripheral: Device 1ac1:089a
+# The 03 number and System peripheral name might be different, because those are host-system specific, 
+# but as long as you see a device listed with 089a then you're okay to proceed.
+#
+# Also verify that the PCIe driver is loaded:
+ls /dev/apex_0
+# You should simply see the name repeated back:
+# /dev/apex_0
+
+
+
+### Setup cuda.  This is different from what I did for 20.04!
+## I think it is safest to use the Ubuntu repo version of the nvidia driver and install cuda from downloaded Nvidia deb file.
+# Install the cuda toolkit:
+sudo apt install nvidia-cuda-toolkit
+#
+# Download from the NVidia site (or copy from my USB stick): cuda-repo-ubuntu2204-11-7-local_11.7.1-515.65.01-1_amd64.deb
+# Note that this depends on the Nvidia driver you've installed, I used 510.108.03 which is not the "latest", but when I did
+# it on a "virgin" system it seemed to installed driver 515.105.01, which required a reboot for nvidia-smi to work
+sudo dpkg -i Downloads/cuda-repo-ubuntu2204-11-7-local_11.7.1-515.65.01-1_amd64.deb
+sudo cp /var/cuda-repo-ubuntu2204-11-7-local/cuda-F83D2C4C-keyring.gpg /usr/share/keyrings/
+sudo apt update
+sudo apt-get -y install cuda
+#
+## next install the CUDNN.
+# download: cudnn-linux-x86_64-8.4.1.50_cuda11.6-archive.tar.xz from Nvidia site (or get it from my USB stick)
+## extract the archive from the file manager and copy the include and lib directories to /usr/local
+cd Downloads/cudnn-linux-x86_64-8.4.1.50_cuda11.6-archive
+sudo mkdir /usr/local/cuda-11.7
+sudo cp -a include /usr/local/cuda-11.7
+sudo cp -a lib /usr/local/cuda-11.7
+
+
+
+### Create an virtual environment with python 3.8 or 3.9 as the PyCoral doesn't work with the default 3.10 of 22.04
+# I used python 3.8 and anaconda.
+# download from (https://www.anaconda.com/download/#linux) or copy Anaconda3-2023.03-1-Linux-x86_64.sh
+bash ~/Downloads/Anaconda3-2023.03-1-Linux-x86_64.sh
+# accept the license agreement
+# press ENTER key to accept the default installation location
+# Answer yes to allow the installer to initialize Anaconda3
+# close the termainal and open a new one, note that conda is "active and the prompt cpntains the (base) environment.
+# IMHO it is best to not have a conda environment active on every terminal login, so do this command:
+conda config --set auto_activate_base false
+# log out and back in again and note the (base) is missing from the login prompt
+#
+# This creates a python3.10.9 which like the 22.04 python3 package is "too" new for pycoral to use the TPU
+# so we need an environment with an older python, I used 3.8.10
+#
+# Create a pytorch v1.11 environment suitable for yolov8 with cuda ( -c pytorch uses Anaconda pytorch channel ):
+# Make sure cuda is installed correctly before doing this!
+conda create --name yolo8 pytorch==1.11.0 torchvision==0.12.0 torchaudio==0.11.0 cudatoolkit=11.3 python=3.8.10 -c pytorch
+
+
+
+### Activate the virtual environment and install pycoral
+conda activate yolo8
+# the cp38 in the filenames needs to match the python version 36,37,38, or 39 for python 3.6,3.7,3.8, or 3.9
+pip install Downloads/tflite_runtime-2.5.0.post1-cp38-cp38-linux_x86_64.whl
+pip install Downloads/pycoral-2.0.0-cp38-cp38-linux_x86_64.whl
+### install other python modules I used:
+pip install imutils paho-mqtt
+### install Ultralytics yolo support
+pip install ultralytics
+#
+### After setting up a few more systems seems always need to do this even without darknet when using this Anaconda version
+### if the -y4v darknet yolo4 verification fails with error: lib/libstdc++.so.6: version `GLIBCXX_3.4.30' not found (required by /lib/libgdal.so.30
+### but if you can run yolo8 I'd forget about darknet yolo4.
+# Do this:
+# (found via Google search), newer Anaconda versions may fix this.
+cd $CONDA_PREFIX/lib
+mv libstdc++.so.6 libstdc++.so.6.old
+ln -s /usr/lib/x86_64-linux-gnu/libstdc++.so.6 libstdc++.so.6
+
+
+
+########################
+##### Install node-red for web controller, deleting old detections, and Email notifications of detection.
+#### install node-red, choose N for Pi specific modules:
+bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)
+# You may want to run   node-red admin init
+# to configure your initial options and settings.
+node-red admin init
+ould you like to customise the settings now (y/N) ?  
+##### I answered: y
+=====================================
+This tool will help you create a Node-RED settings file.
+
+✔ Settings file · /home/ai/.node-red/settings.js
+
+User Security
+=============
+✔ Do you want to setup user security? · No
+
+Projects
+========
+The Projects feature allows you to version control your flow using a local git repository.
+
+✔ Do you want to enable the Projects feature? · Yes
+✔ What project workflow do you want to use? · manual - you must manually commit changes
+
+Editor settings
+===============
+✔ Select a theme for the editor. To use any theme other than "default", you will need to install @node-red-contrib-themes/theme-collection in your Node-RED user directory. · default
+
+✔ Select the text editor component to use in the Node-RED Editor · monaco (default)
+
+Node settings
+=============
+✔ Allow Function nodes to load external modules? (functionExternalModules) · Yes
+
+
+###### then in node-red do Manage Pallet to install:
+#  node-red-dashboard node-red-node-base64 node-red-contrib-image-output node-red-node-email
+# or do (easier, but doing it in node-red can help you get the hang of none-red):
+cd ~/.node-red
+npm i node-red-dashboard node-red-node-email node-red-contrib-image-output node-red-node-base64
+# My "in alert region" filter needs an extra JavaScript module that is not available in node-red by default.
+# Install point-in-polygon with:
+cd ~/.node-red
+npm install point-in-polygon
+# var inside = require('point-in-polygon');   // the normal nodejs way doesn't work in node-red.
+#
+# lately something has been going wrong with the node-red install/upgrade script.  If Manage Pallet or npm i fails:
+# use the username you setup on installation, I used ai
+sudo chown -R ai.ai .npm
+##### Did not have this issue with fresh 20.04 installation for GTX950
+#
+# start and stop node-red to create default settings.js file
+node-red-start
+# type ctrl-C in terminal where node-red-start was run
+node-red-stop
+#
+# node-red defaults to storing flows in flows_<hostname>.json
+# since I like to "clone" the system and then change the hostname
+# this causes loss of any installed flows, to fix:
+### Newest installs seem to default to flowFile: 'flows.json'
+nano .node-red/settings.js
+# uncomment  (7SEP2022wbk fresh install using node-red admin init already had it uncommented)
+flowFile: 'flows.json',
+# change in function editorTheme: { Projects{} }, this is handled by: 'node-red admin init' now
+enabled: false, to: enabled: true,
+#
+# My "in alert region" filter needs an extra JavaScript module that is not available in node-red by default.
+# So must edit .node-red/settings.js and add (around lin 432 on new installs):
+      functionGlobalContext: {
+          insidePolygon:require('point-in-polygon'),
+      }
+# Requires a node-red restart when finished.
+# exit nano Ctrl-X Y
+#
+#
+#
+# make node-red start automatically on boot
+sudo systemctl enable nodered.service
+#
+#
+#
+# Optional for onvif_discover.js to scan subnet for Onvif camera URLs
+npm i node-onvif
+#
+#
+#
+## to avoid having to edit all the scripts used by node-red exec nodes in the sample controller flow:
+sudo ln -s /home/YourUserName /home/ai
+
+
+######
+
+
+
