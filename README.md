@@ -5,6 +5,7 @@ The major change was ading an intermideate output queue to verify detections wit
 Here is an image sequence that shows the software in action, made from the detection images as a solicitor walks from my neighbor's yard, across the street, to my front door, leaves his flyer, and proceeds across my yard on to the next house. He walks across the field of view of multiple cameras with various resolutions of 4K, 5Mpixel, & 1080p:
 https://youtu.be/1kDxmbTq4P4
 
+
 I've had some health issues that laid me up for about a year, but this system has been running 24/7/365 since about September of 2022 with 26 outside cameras each set for 3 fps and has had only four false positives in all that time. Two of the false positives were my neighbor's cat mis-detected as a person that also detected as a person with the YOLO model:
 ![01_51_24 97_TPU_driveway_AI](https://github.com/wb666greene/AI-Person-Detector-with-YOLO-Verification/assets/31488806/d67224a1-332f-4e8a-a6cf-611fe2935d15)
 ![22_02_20 66_TPU_SideYard_AI](https://github.com/wb666greene/AI-Person-Detector-with-YOLO-Verification/assets/31488806/5f18a4a9-ec20-4220-975d-b801b1cbb042)
