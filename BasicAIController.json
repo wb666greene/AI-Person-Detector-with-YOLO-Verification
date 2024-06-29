@@ -1,0 +1,2073 @@
+[
+    {
+        "id": "7fdf004e.28b08",
+        "type": "tab",
+        "label": "Basic AI Controller",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "1f7f94cb.37672b",
+        "type": "mqtt in",
+        "z": "7fdf004e.28b08",
+        "name": "AIdetection",
+        "topic": "AIdetection/#",
+        "qos": "0",
+        "datatype": "buffer",
+        "broker": "b5381f24.da8dd",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 95,
+        "y": 350,
+        "wires": [
+            [
+                "78d1dff3.0291b"
+            ]
+        ]
+    },
+    {
+        "id": "78d1dff3.0291b",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "image",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "topic",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 265,
+        "y": 350,
+        "wires": [
+            [
+                "e3070185.962e6"
+            ]
+        ]
+    },
+    {
+        "id": "915c3dee.532df",
+        "type": "file",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "filename": "",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "x": 605,
+        "y": 345,
+        "wires": [
+            [
+                "82dc1ad7.203c38"
+            ]
+        ]
+    },
+    {
+        "id": "82dc1ad7.203c38",
+        "type": "debug",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 730,
+        "y": 345,
+        "wires": []
+    },
+    {
+        "id": "34561250.78230e",
+        "type": "e-mail",
+        "z": "7fdf004e.28b08",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": false,
+        "token": "",
+        "secure": true,
+        "tls": false,
+        "name": "",
+        "dname": "Email  Notification",
+        "x": 1580,
+        "y": 525,
+        "wires": []
+    },
+    {
+        "id": "37d156c.eb105aa",
+        "type": "mqtt out",
+        "z": "7fdf004e.28b08",
+        "name": "Alarm/MODE",
+        "topic": "Alarm/MODE",
+        "qos": "2",
+        "retain": "true",
+        "broker": "a12f6f63.c32c7",
+        "x": 970,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "430a2099.772a3",
+        "type": "debug",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1530,
+        "y": 490,
+        "wires": []
+    },
+    {
+        "id": "49591e0d.a909a",
+        "type": "file in",
+        "z": "7fdf004e.28b08",
+        "name": "get file ",
+        "filename": "",
+        "format": "",
+        "chunk": false,
+        "sendError": false,
+        "x": 1475,
+        "y": 580,
+        "wires": [
+            [
+                "6a8a18c2.47bcb8"
+            ]
+        ]
+    },
+    {
+        "id": "6a8a18c2.47bcb8",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "Setup Email",
+        "rules": [
+            {
+                "t": "set",
+                "p": "to",
+                "pt": "msg",
+                "to": "2817489274@mms.cricketwireless.net",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "AI Detection Alert!",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1135,
+        "y": 525,
+        "wires": [
+            [
+                "4db07288.dd6ccc"
+            ]
+        ]
+    },
+    {
+        "id": "fb8c49b0.c330c8",
+        "type": "inject",
+        "z": "7fdf004e.28b08",
+        "name": "Send Test Email",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 1155,
+        "y": 580,
+        "wires": [
+            [
+                "806e9e23.50a13"
+            ]
+        ]
+    },
+    {
+        "id": "806e9e23.50a13",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "attachment",
+        "rules": [
+            {
+                "t": "set",
+                "p": "msg.filename",
+                "pt": "msg",
+                "to": "/home/ai/AI/TestDetection.jpg",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1330,
+        "y": 580,
+        "wires": [
+            [
+                "49591e0d.a909a"
+            ]
+        ]
+    },
+    {
+        "id": "681b3028.8b999",
+        "type": "inject",
+        "z": "7fdf004e.28b08",
+        "name": "Set AI Mode Idle",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "1",
+        "topic": "Alarm/MODE",
+        "payload": "Idle",
+        "payloadType": "str",
+        "x": 110,
+        "y": 35,
+        "wires": [
+            [
+                "a92c8567.ff0738"
+            ]
+        ]
+    },
+    {
+        "id": "84a2a8da.2a4348",
+        "type": "inject",
+        "z": "7fdf004e.28b08",
+        "name": "Set AI Mode Audio",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "1.0",
+        "topic": "Alarm/MODE",
+        "payload": "Audio",
+        "payloadType": "str",
+        "x": 120,
+        "y": 75,
+        "wires": [
+            [
+                "a92c8567.ff0738"
+            ]
+        ]
+    },
+    {
+        "id": "a0897db4.d190e",
+        "type": "inject",
+        "z": "7fdf004e.28b08",
+        "name": "Set AI Mode Notify",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "Alarm/MODE",
+        "payload": "Notify",
+        "payloadType": "str",
+        "x": 120,
+        "y": 115,
+        "wires": [
+            [
+                "a92c8567.ff0738"
+            ]
+        ]
+    },
+    {
+        "id": "a92c8567.ff0738",
+        "type": "ui_dropdown",
+        "z": "7fdf004e.28b08",
+        "name": "Set AI Mode",
+        "label": "",
+        "tooltip": "Set AI Mode",
+        "place": "Select option",
+        "group": "fab579a8.55a868",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "options": [
+            {
+                "label": "Idle",
+                "value": "Idle",
+                "type": "str"
+            },
+            {
+                "label": "Audio Alerts",
+                "value": "Audio",
+                "type": "str"
+            },
+            {
+                "label": "Email Alerts",
+                "value": "Notify",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "Alarm/MODE",
+        "x": 315,
+        "y": 75,
+        "wires": [
+            [
+                "879c9644.038c48"
+            ]
+        ]
+    },
+    {
+        "id": "4db07288.dd6ccc",
+        "type": "delay",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "2",
+        "nbRateUnits": "6",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1325,
+        "y": 525,
+        "wires": [
+            [
+                "430a2099.772a3",
+                "34561250.78230e"
+            ]
+        ]
+    },
+    {
+        "id": "33e58de.4016972",
+        "type": "base64",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "action": "str",
+        "property": "payload",
+        "x": 455,
+        "y": 480,
+        "wires": [
+            [
+                "7a8e0283.0546cc",
+                "54dca344.c9d7bc"
+            ]
+        ]
+    },
+    {
+        "id": "91ec5895.5a45d8",
+        "type": "mqtt in",
+        "z": "7fdf004e.28b08",
+        "name": "espeak",
+        "topic": "Espeak",
+        "qos": "2",
+        "broker": "313c03c1.be782c",
+        "inputs": 0,
+        "x": 1325,
+        "y": 215,
+        "wires": [
+            [
+                "79a966b3.dee288",
+                "ea43c065.505fb"
+            ]
+        ]
+    },
+    {
+        "id": "b1e96bf1.90dd28",
+        "type": "inject",
+        "z": "7fdf004e.28b08",
+        "name": "speak test",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "Espeak",
+        "payload": "'\"Multi word test\"'",
+        "payloadType": "str",
+        "x": 1345,
+        "y": 165,
+        "wires": [
+            [
+                "ea43c065.505fb",
+                "79a966b3.dee288"
+            ]
+        ]
+    },
+    {
+        "id": "79a966b3.dee288",
+        "type": "exec",
+        "z": "7fdf004e.28b08",
+        "command": "/usr/bin/espeak",
+        "addpay": true,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": true,
+        "name": "Espeak",
+        "x": 1550,
+        "y": 285,
+        "wires": [
+            [
+                "7bd6ee8b.f3e1a"
+            ],
+            [
+                "7bd6ee8b.f3e1a"
+            ],
+            [
+                "7bd6ee8b.f3e1a"
+            ]
+        ]
+    },
+    {
+        "id": "cc4a3c08.4860a",
+        "type": "switch",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "property": "filename",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "Cam0",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "Cam1",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "Cam2",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "Cam3",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "Cam4",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "Cam5",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "Cam6",
+                "vt": "str"
+            },
+            {
+                "t": "cont",
+                "v": "Cam7",
+                "vt": "str"
+            },
+            {
+                "t": "nnull"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 9,
+        "x": 960,
+        "y": 265,
+        "wires": [
+            [
+                "34798904.009966"
+            ],
+            [
+                "3692d633.2bc36a"
+            ],
+            [
+                "940daf72.f60aa"
+            ],
+            [
+                "88cf3055.1761c"
+            ],
+            [
+                "ab06d215.ec8ab"
+            ],
+            [
+                "29027a6c.58d396"
+            ],
+            [
+                "7d481c6d.fb8e54"
+            ],
+            [
+                "2239905a.4c7fc"
+            ],
+            [
+                "d804870f.124488"
+            ]
+        ],
+        "outputLabels": [
+            "driveway",
+            "patio",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ]
+    },
+    {
+        "id": "34798904.009966",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "Cam0",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "\"'Camera Zero'\"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Espeak",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 125,
+        "wires": [
+            [
+                "1bda63c8.b77b4c"
+            ]
+        ]
+    },
+    {
+        "id": "1bda63c8.b77b4c",
+        "type": "delay",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "4",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "outputs": 1,
+        "x": 1340,
+        "y": 285,
+        "wires": [
+            [
+                "ea43c065.505fb"
+            ]
+        ]
+    },
+    {
+        "id": "3692d633.2bc36a",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "Cam1",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "\"'Camera One'\"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Espeak",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 165,
+        "wires": [
+            [
+                "1bda63c8.b77b4c"
+            ]
+        ]
+    },
+    {
+        "id": "940daf72.f60aa",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "Cam2",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "\"'Camera Two'\"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Espeak",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 205,
+        "wires": [
+            [
+                "1bda63c8.b77b4c"
+            ]
+        ]
+    },
+    {
+        "id": "88cf3055.1761c",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "Cam3",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "\"'Camera Three'\"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Espeak",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 245,
+        "wires": [
+            [
+                "1bda63c8.b77b4c"
+            ]
+        ]
+    },
+    {
+        "id": "29027a6c.58d396",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "Cam5",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "\"'Camera Five'\"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Espeak",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 325,
+        "wires": [
+            [
+                "1bda63c8.b77b4c"
+            ]
+        ]
+    },
+    {
+        "id": "ab06d215.ec8ab",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "Cam4",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "\"'Camera Four'\"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Espeak",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 285,
+        "wires": [
+            [
+                "1bda63c8.b77b4c"
+            ]
+        ]
+    },
+    {
+        "id": "38328575.34a5ba",
+        "type": "ui_dropdown",
+        "z": "7fdf004e.28b08",
+        "name": "Set UI View",
+        "label": "",
+        "tooltip": "Enable/Disable Camera Live View",
+        "place": "Camera Viewing",
+        "group": "fab579a8.55a868",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "multiple": false,
+        "options": [
+            {
+                "label": "Disable",
+                "value": "0",
+                "type": "str"
+            },
+            {
+                "label": "Live",
+                "value": "1",
+                "type": "str"
+            },
+            {
+                "label": "Detections",
+                "value": "3",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "Alarm/UImode",
+        "topicType": "str",
+        "className": "",
+        "x": 300,
+        "y": 660,
+        "wires": [
+            [
+                "73c6d7c2.71cb88"
+            ]
+        ]
+    },
+    {
+        "id": "73c6d7c2.71cb88",
+        "type": "mqtt out",
+        "z": "7fdf004e.28b08",
+        "name": "Alarm/UImode",
+        "topic": "Alarm/UImode",
+        "qos": "2",
+        "retain": "true",
+        "broker": "a12f6f63.c32c7",
+        "x": 480,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "7d481c6d.fb8e54",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "Cam6",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "\"'Camera Six'\"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Espeak",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 364,
+        "wires": [
+            [
+                "1bda63c8.b77b4c"
+            ]
+        ]
+    },
+    {
+        "id": "2239905a.4c7fc",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "Cam7",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "\"'Camera Seven'\"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Espeak",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1130,
+        "y": 404,
+        "wires": [
+            [
+                "1bda63c8.b77b4c"
+            ]
+        ]
+    },
+    {
+        "id": "d804870f.124488",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "unspecified",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "\"'Person Detected on New Camera'\"",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Espeak",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1150,
+        "y": 445,
+        "wires": [
+            [
+                "1bda63c8.b77b4c"
+            ]
+        ]
+    },
+    {
+        "id": "40e45d76.7189b4",
+        "type": "mqtt in",
+        "z": "7fdf004e.28b08",
+        "name": "ImageBuffer",
+        "topic": "ImageBuffer/#",
+        "qos": "0",
+        "datatype": "buffer",
+        "broker": "a12f6f63.c32c7",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 95,
+        "y": 535,
+        "wires": [
+            [
+                "6a391816.66ef98"
+            ]
+        ]
+    },
+    {
+        "id": "e77988ff.4ac438",
+        "type": "rbe",
+        "z": "7fdf004e.28b08",
+        "name": "loop breaker",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "payload",
+        "x": 805,
+        "y": 80,
+        "wires": [
+            [
+                "37d156c.eb105aa"
+            ]
+        ]
+    },
+    {
+        "id": "8a927c7f.c3cd4",
+        "type": "inject",
+        "z": "7fdf004e.28b08",
+        "name": "Alarm/UImode",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "3",
+        "topic": "Alarm/UImode",
+        "payload": "3",
+        "payloadType": "str",
+        "x": 115,
+        "y": 660,
+        "wires": [
+            [
+                "38328575.34a5ba"
+            ]
+        ]
+    },
+    {
+        "id": "ea43c065.505fb",
+        "type": "debug",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1550,
+        "y": 215,
+        "wires": []
+    },
+    {
+        "id": "6a391816.66ef98",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "image",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "topic",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 305,
+        "y": 535,
+        "wires": [
+            [
+                "3f6b6b7e.e47ae4"
+            ]
+        ]
+    },
+    {
+        "id": "3f6b6b7e.e47ae4",
+        "type": "csv",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "sep": "!",
+        "hdrin": "",
+        "hdrout": "",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "topic,filename",
+        "skip": "0",
+        "x": 130,
+        "y": 480,
+        "wires": [
+            [
+                "1ed0e097.e6a1cf"
+            ]
+        ]
+    },
+    {
+        "id": "1ed0e097.e6a1cf",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload.filename",
+                "pt": "msg",
+                "to": "filename",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "image",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "ImageBuffer",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 285,
+        "y": 480,
+        "wires": [
+            [
+                "33e58de.4016972"
+            ]
+        ]
+    },
+    {
+        "id": "e3070185.962e6",
+        "type": "csv",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "sep": "!",
+        "hdrin": "",
+        "hdrout": "",
+        "multi": "one",
+        "ret": "\\n",
+        "temp": "topic,filename,startX,startY,endX,endY,Xcenter,Ycenter,Xlength,Ylength",
+        "skip": "0",
+        "x": 100,
+        "y": 295,
+        "wires": [
+            [
+                "dd662c41.8600d"
+            ]
+        ]
+    },
+    {
+        "id": "dd662c41.8600d",
+        "type": "change",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload.filename",
+                "pt": "msg",
+                "to": "filename",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.startX",
+                "pt": "msg",
+                "to": "startX",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.startY",
+                "pt": "msg",
+                "to": "startY",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.endX",
+                "pt": "msg",
+                "to": "endX",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.endY",
+                "pt": "msg",
+                "to": "endY",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.Xcenter",
+                "pt": "msg",
+                "to": "Xcenter",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.Ycenter",
+                "pt": "msg",
+                "to": "Ycenter",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.Xlength",
+                "pt": "msg",
+                "to": "Xlength",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "payload.Ylength",
+                "pt": "msg",
+                "to": "Ylength",
+                "tot": "msg"
+            },
+            {
+                "t": "move",
+                "p": "image",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "AIdetection",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 260,
+        "y": 295,
+        "wires": [
+            [
+                "46ac8ce5.649d34"
+            ]
+        ]
+    },
+    {
+        "id": "7bd6ee8b.f3e1a",
+        "type": "debug",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1720,
+        "y": 285,
+        "wires": []
+    },
+    {
+        "id": "9fb6468d.efd628",
+        "type": "inject",
+        "z": "7fdf004e.28b08",
+        "name": "Alarm/ViewCamera",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1.2",
+        "topic": "Alarm/ViewCamera",
+        "payload": "0",
+        "payloadType": "num",
+        "x": 135,
+        "y": 755,
+        "wires": [
+            [
+                "edbfd720.c74178"
+            ]
+        ]
+    },
+    {
+        "id": "edbfd720.c74178",
+        "type": "ui_dropdown",
+        "z": "7fdf004e.28b08",
+        "name": "Select Camera",
+        "label": "",
+        "tooltip": "Select Camera for Live View or Detection",
+        "place": "Select Camera",
+        "group": "fab579a8.55a868",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "multiple": false,
+        "options": [
+            {
+                "label": "Cam 0",
+                "value": "0",
+                "type": "str"
+            },
+            {
+                "label": "Cam 1",
+                "value": "1",
+                "type": "str"
+            },
+            {
+                "label": "Cam 2",
+                "value": "2",
+                "type": "str"
+            },
+            {
+                "label": "Cam 3",
+                "value": "3",
+                "type": "str"
+            },
+            {
+                "label": "Cam 4",
+                "value": "4",
+                "type": "str"
+            },
+            {
+                "label": "Cam 5",
+                "value": "5",
+                "type": "str"
+            },
+            {
+                "label": "Cam 6",
+                "value": "6",
+                "type": "str"
+            },
+            {
+                "label": "Cam 7",
+                "value": "7",
+                "type": "str"
+            }
+        ],
+        "payload": "",
+        "topic": "ViewCamera",
+        "topicType": "str",
+        "className": "",
+        "x": 340,
+        "y": 755,
+        "wires": [
+            [
+                "53717043.9e403"
+            ]
+        ]
+    },
+    {
+        "id": "53717043.9e403",
+        "type": "mqtt out",
+        "z": "7fdf004e.28b08",
+        "name": "Alarm/ViewCamera",
+        "topic": "Alarm/ViewCamera",
+        "qos": "2",
+        "retain": "true",
+        "broker": "a12f6f63.c32c7",
+        "x": 540,
+        "y": 755,
+        "wires": []
+    },
+    {
+        "id": "b2244a1a.233fc8",
+        "type": "ui_button",
+        "z": "7fdf004e.28b08",
+        "name": "StartAI",
+        "group": "1f34e858.de7018",
+        "order": 1,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Start  AI",
+        "tooltip": "Launch the Python AI code",
+        "color": "",
+        "bgcolor": "#20d020",
+        "icon": "",
+        "payload": "",
+        "payloadType": "date",
+        "topic": "",
+        "x": 655,
+        "y": 885,
+        "wires": [
+            [
+                "b365a41c.61e018"
+            ]
+        ]
+    },
+    {
+        "id": "e379de04.75afd",
+        "type": "debug",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 445,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "ede1c379.8b1e2",
+        "type": "ui_button",
+        "z": "7fdf004e.28b08",
+        "name": "PowerOff",
+        "group": "1f34e858.de7018",
+        "order": 4,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Power Off",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "#793042",
+        "icon": "",
+        "payload": "",
+        "payloadType": "date",
+        "topic": "",
+        "x": 95,
+        "y": 880,
+        "wires": [
+            [
+                "e3630bdc.12c098"
+            ]
+        ]
+    },
+    {
+        "id": "e3630bdc.12c098",
+        "type": "exec",
+        "z": "7fdf004e.28b08",
+        "command": " sudo /home/ai/AI/PowerOff.sh",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "shutdown",
+        "x": 275,
+        "y": 880,
+        "wires": [
+            [
+                "e379de04.75afd"
+            ],
+            [
+                "e379de04.75afd"
+            ],
+            [
+                "e379de04.75afd"
+            ]
+        ]
+    },
+    {
+        "id": "29303650.3cc2ea",
+        "type": "debug",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 445,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "39975be8.4e6f44",
+        "type": "exec",
+        "z": "7fdf004e.28b08",
+        "command": " sudo /home/ai/AI/Reboot.sh",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "reboot",
+        "x": 265,
+        "y": 940,
+        "wires": [
+            [
+                "29303650.3cc2ea"
+            ],
+            [
+                "29303650.3cc2ea"
+            ],
+            [
+                "29303650.3cc2ea"
+            ]
+        ]
+    },
+    {
+        "id": "914e4904.410b98",
+        "type": "ui_button",
+        "z": "7fdf004e.28b08",
+        "name": "Reboot",
+        "group": "1f34e858.de7018",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Reboot",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "#808080",
+        "icon": "",
+        "payload": "",
+        "payloadType": "date",
+        "topic": "",
+        "x": 95,
+        "y": 940,
+        "wires": [
+            [
+                "39975be8.4e6f44"
+            ]
+        ]
+    },
+    {
+        "id": "28ebcb01.3c2f84",
+        "type": "inject",
+        "z": "7fdf004e.28b08",
+        "name": "Daily Cleanup",
+        "repeat": "",
+        "crontab": "00 01 * * *",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 1020,
+        "wires": [
+            [
+                "a55af03a.5902d"
+            ]
+        ]
+    },
+    {
+        "id": "a55af03a.5902d",
+        "type": "exec",
+        "z": "7fdf004e.28b08",
+        "command": "/home/ai/AI/Cleanup.sh ",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "disk cleanup",
+        "x": 355,
+        "y": 1020,
+        "wires": [
+            [
+                "c35d729e.14c13"
+            ],
+            [
+                "c35d729e.14c13"
+            ],
+            [
+                "c35d729e.14c13"
+            ]
+        ]
+    },
+    {
+        "id": "c35d729e.14c13",
+        "type": "debug",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 505,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "baef9bba.1564b8",
+        "type": "inject",
+        "z": "7fdf004e.28b08",
+        "name": "Launch AI",
+        "props": [
+            {
+                "p": "payload",
+                "v": "",
+                "vt": "date"
+            },
+            {
+                "p": "topic",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.5",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 130,
+        "y": 1080,
+        "wires": [
+            [
+                "ed42b729.f38338"
+            ]
+        ]
+    },
+    {
+        "id": "ed42b729.f38338",
+        "type": "exec",
+        "z": "7fdf004e.28b08",
+        "command": "/home/ai/AI/StartAI.sh ",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "Autostart",
+        "x": 320,
+        "y": 1080,
+        "wires": [
+            [
+                "29e0d7fd.77f8c8"
+            ],
+            [
+                "29e0d7fd.77f8c8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "4dd28635.b13008",
+        "type": "mqtt in",
+        "z": "7fdf004e.28b08",
+        "name": "AmAlive",
+        "topic": "AmAlive",
+        "qos": "0",
+        "broker": "f7f213b3.fdec4",
+        "inputs": 0,
+        "x": 102,
+        "y": 1140,
+        "wires": [
+            [
+                "721843a5.9e2d7c"
+            ]
+        ]
+    },
+    {
+        "id": "721843a5.9e2d7c",
+        "type": "trigger",
+        "z": "7fdf004e.28b08",
+        "name": "watchdog",
+        "op1": "",
+        "op2": "Watchdog Timeout Onvif AI Restart!",
+        "op1type": "nul",
+        "op2type": "str",
+        "duration": "5",
+        "extend": true,
+        "overrideDelay": false,
+        "units": "min",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 240,
+        "y": 1140,
+        "wires": [
+            [
+                "ed42b729.f38338"
+            ]
+        ]
+    },
+    {
+        "id": "e43e2bb8.05a588",
+        "type": "mqtt in",
+        "z": "7fdf004e.28b08",
+        "name": "AI/Status",
+        "topic": "AI/Status",
+        "qos": "2",
+        "broker": "a12f6f63.c32c7",
+        "inputs": 0,
+        "x": 102,
+        "y": 1200,
+        "wires": [
+            [
+                "338e7b4c.1d2264",
+                "29e0d7fd.77f8c8"
+            ]
+        ]
+    },
+    {
+        "id": "338e7b4c.1d2264",
+        "type": "switch",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "died",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 335,
+        "y": 1200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "29e0d7fd.77f8c8",
+        "type": "debug",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 512,
+        "y": 1145,
+        "wires": []
+    },
+    {
+        "id": "a853ad64.d1c62",
+        "type": "ui_button",
+        "z": "7fdf004e.28b08",
+        "name": "StopAI",
+        "group": "1f34e858.de7018",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "Stop AI",
+        "tooltip": "Stop the Python AI code",
+        "color": "",
+        "bgcolor": "#d02020",
+        "icon": "",
+        "payload": "",
+        "payloadType": "date",
+        "topic": "",
+        "x": 645,
+        "y": 945,
+        "wires": [
+            [
+                "153cf52a.0a618b"
+            ]
+        ]
+    },
+    {
+        "id": "153cf52a.0a618b",
+        "type": "exec",
+        "z": "7fdf004e.28b08",
+        "command": "/home/ai/AI/StopAI.sh ",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "StopAI",
+        "x": 815,
+        "y": 945,
+        "wires": [
+            [
+                "34b43726.7326d8"
+            ],
+            [
+                "34b43726.7326d8"
+            ],
+            [
+                "34b43726.7326d8"
+            ]
+        ]
+    },
+    {
+        "id": "b365a41c.61e018",
+        "type": "exec",
+        "z": "7fdf004e.28b08",
+        "command": "/home/ai/AI/StartAI.sh ",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "oldrc": false,
+        "name": "StartAI",
+        "x": 815,
+        "y": 885,
+        "wires": [
+            [
+                "86a4908f.a330b"
+            ],
+            [
+                "86a4908f.a330b"
+            ],
+            [
+                "86a4908f.a330b"
+            ]
+        ]
+    },
+    {
+        "id": "879c9644.038c48",
+        "type": "function",
+        "z": "7fdf004e.28b08",
+        "name": "Notification Filter",
+        "func": "var Idle = flow.get('Idle')||0;\nvar Audio = flow.get('Audio')||0;\nvar Notify = flow.get('Notify')||0;\nvar alertAnyway;\n\nif (msg.topic === \"Alarm/MODE\"){\n    if(msg.payload.includes(\"Idle\")){\n        flow.set('Idle',1);    \n        flow.set('Audio',0);\n        flow.set('Notify',0);\n    }else if(msg.payload.includes(\"Audio\")){\n        flow.set('Idle',0);\n        flow.set('Audio',1);\n        flow.set('Notify',0);\n    }else if(msg.payload.includes(\"Notify\")){\n        flow.set('Idle',0);\n        flow.set('Audio',0);\n        flow.set('Notify',1);\n    }\n    return [ msg, null, null ];     // change null to msg for debugging.\n}\n\n\nif (msg.topic.includes(\"AIdetection\")){\n    // without this dog walkers on Hummingbird cause alerts\n    if (msg.InAlertRegion === false){ // inRegionFilter sets this.\n        return [ null, null, null ];\n    }\n    if (Idle == 1){\n        /*\n        This is an example to enable audio alerts on certain cameras\n        even if in idle mode where there woould normally be no notification.\n        Normally people are not in the alert region of these cameras\n        */\n        alertAnyway=0;\n        if( msg.filename.includes(\"Mail\")|| msg.filename.includes(\"Front\") || \n        msg.filename.includes(\"Humming\") || msg.filename.includes(\"South\") ||\n        msg.filename.includes(\"North\") || msg.filename.includes(\"Side\")){\n            alertAnyway=1;\n        }\n        if (alertAnyway == 1){\n            return [ null, msg, null ];\n        }else{\n            return [ null, null, null ];\n        }\n    }\n    if (Audio == 1){\n        return [ null, msg, null ];\n    }\n    if (Notify == 1){\n        if (msg.startY>= 30)\n            return [ null, msg, msg ];\n        else    // don't email images with head cut off, wait for better one\n            return [ null, msg, null ];\n    }\n}\n\nreturn [ null, null, null ];",
+        "outputs": 3,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 125,
+        "wires": [
+            [
+                "e77988ff.4ac438"
+            ],
+            [
+                "cc4a3c08.4860a"
+            ],
+            [
+                "6a8a18c2.47bcb8"
+            ]
+        ],
+        "outputLabels": [
+            "Status",
+            "AudioAlert",
+            "EmailAlert"
+        ]
+    },
+    {
+        "id": "46ac8ce5.649d34",
+        "type": "function",
+        "z": "7fdf004e.28b08",
+        "name": "In Region Filter",
+        "func": "/* LorexAI \"in alert region\" filter.\n Install point-in-polygon with:\n    cd ~/.node-red\n    npm install point-in-polygon\n var inside = require('point-in-polygon'); // doesn't work in node-red.\n So must edit .node-red/settings.js and add:\n      functionGlobalContext: {\n          insidePolygon:require('point-in-polygon')\n      }\n Requires a node-red restart when finished.\n*/\n\nvar inside = global.get('insidePolygon');\nmsg.InAlertRegion=true;   // default is to accept detection anywhere in image\n\n\n// screen for LR box point in reagion\nvar poly=[[]];\n\n// polygon points picked from image using GIMP\nif(msg.filename.includes(\"DriveWay\"))\n    poly=[ [500,1600], [1550,1200], [2200,700], [3841,500], [3841,1500], [2200, 2161], [1400,2161] ];\nelse if(msg.filename.includes(\"CliffwoodNorth\"))\n    poly=[ [-1,1980], [3500,400], [3840,380], [3840, 2160],[-1,2160] ];\nelse if(msg.filename.includes(\"CliffwoodSouth\"))\n    poly=[ [50,250], [250,750], [3840,1900], [50,1900] ];\n//else if(msg.filename.includes(\"Intersection\"))\n//    poly=[ [-1,1000], [900,1100], [3841,1500], [3841,2161], [-1,2161] ];\nelse if(msg.filename.includes(\"HummingbirdRight\"))\n    poly=[ [-1,1100], [2400,900], [3841,1650], [3841,2161], [-1, 2161] ];\nelse if(msg.filename.includes(\"FrontDoor\"))\n    poly=[[-1,900], [600,1100], [600,900], [3841,1100], [3841,2161], [-1,2161], ];\nelse if(msg.filename.includes(\"HummingbirdLeft\"))\n    poly=[[1200,850], [500,1600], [-1,2161], [3841,2161], [3841,1000], [3000,1000]];\n   \nif(poly.length > 2)\n    msg.InAlertRegion = inside([msg.endX, msg.endY], poly); // returns false if point not inside polygon\nif(msg.InAlertRegion === false)\n    return msg; // no need to test for bogus object if out of the alert region.\n\n\n\n// filter for box points matching bogus detection of static object\n// var bogus=[[ ULx.ULy, LRx,LRy, tol ]];\n//\n// UL,LR of reject object obtained from bogus AI detection image overlay text\n// CamBogus = [ [ startX,startY, endX,endY, tolerence] ]; // multiple bogus detections can be in a frame, so 2D array, N by 5.\nvar bogus= [ [] ];  // empty 2D array is 1 by 0\n\n/*  Idea is that -y8v option makes these no longer necessary\nif(msg.filename.includes(\"PoolEquipment\")){\n    bogus=[ [1300,670, 1420,790, 0.8],      // plumbing pipes/valves\n            [636,621, 1091,1078, 0.3],      // pool filter tank\n            [806,535, 1260,1083, 0.3],      // pool filter tank\n            [441,198, 908,810, 0.3] ];      // pool chemical storage cans\n}else if(msg.filename.includes(\"KitchenDoor\"))\n    bogus=[ [870,255, 1490,650, 0.2] ];    // table on patio\nelse if(msg.filename.includes(\"HummingbirdLeft\"))\n    bogus=[ [2918,235, 3343,916, 0.3] ];    // tree trunk, so far only see these with CPU or NCS AI\nelse if(msg.filename.includes(\"MailBox\"))\n    bogus=[ [883,117, 1606,122, 0.2] ];    // morning shadows on mailbox\nelse if(msg.filename.includes(\"SideYard\"))\n    bogus=[ [864,136, 864,674, 0.2] ];    // afternoon shadows on tarp, so far only see these with CPU or NCS AI\n*/    \nif(bogus[0].length == 5){\n    for (var i=0; i<bogus.length; i++){\n        xtol=(bogus[i][2]-bogus[i][0])*bogus[i][4];\n        if(Math.abs(msg.startX-bogus[i][0])>xtol){continue}\n        if(Math.abs(msg.endX-bogus[i][2])>xtol){continue}\n        ytol=(bogus[i][3]-bogus[i][1])*bogus[i][4];\n        if(Math.abs(msg.startY-bogus[i][1])>ytol){continue}\n        if(Math.abs(msg.endY-bogus[i][3])>ytol){continue}\n        msg.InAlertRegion=false;\n    }\n}\n\n// screen cameras I don't want alerts from for now.\nif( msg.filename.includes(\"Inter\")|| msg.filename.includes(\"Plate\") || msg.filename.includes(\"Reo\") ){\n    msg.InAlertRegion=false;\n}\n\n\n\nif(msg.InAlertRegion === true)\n    msg.filename=msg.filename.replace(\"AI\", \"AI.alert\"); // for QA/QC want to know what would trigger alerts.\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 445,
+        "y": 295,
+        "wires": [
+            [
+                "879c9644.038c48",
+                "915c3dee.532df"
+            ]
+        ]
+    },
+    {
+        "id": "86a4908f.a330b",
+        "type": "debug",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 985,
+        "y": 885,
+        "wires": []
+    },
+    {
+        "id": "34b43726.7326d8",
+        "type": "debug",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 980,
+        "y": 945,
+        "wires": []
+    },
+    {
+        "id": "7a8e0283.0546cc",
+        "type": "ui_button",
+        "z": "7fdf004e.28b08",
+        "name": "filename",
+        "group": "a4d1387f.772c08",
+        "order": 2,
+        "width": "12",
+        "height": "1",
+        "passthru": true,
+        "label": "{{msg.filename}}",
+        "tooltip": "",
+        "color": "#101010",
+        "bgcolor": "#83ed7b",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "topicType": "str",
+        "x": 605,
+        "y": 525,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "87a656cbb7caeb83",
+        "type": "comment",
+        "z": "7fdf004e.28b08",
+        "name": "Sound not working.",
+        "info": "Hackboard sound broken until driver update.\nWhen fixed, wire limit note to espeak node.",
+        "x": 1450,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "54dca344.c9d7bc",
+        "type": "template",
+        "z": "7fdf004e.28b08",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<img height=\"360px\" src=\"data:image/jpg;base64,{{{payload}}}\">",
+        "output": "str",
+        "x": 620,
+        "y": 480,
+        "wires": [
+            [
+                "2baf23ca.ee81fc"
+            ]
+        ]
+    },
+    {
+        "id": "2baf23ca.ee81fc",
+        "type": "ui_template",
+        "z": "7fdf004e.28b08",
+        "group": "a4d1387f.772c08",
+        "name": "Viewer",
+        "order": 1,
+        "width": "13",
+        "height": "7",
+        "format": "<div ng-bind-html=\"msg.payload\"></div>",
+        "storeOutMessages": false,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "x": 775,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b5381f24.da8dd",
+        "type": "mqtt-broker",
+        "name": "localhost",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "a12f6f63.c32c7",
+        "type": "mqtt-broker",
+        "name": "localhost:1883",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": ""
+    },
+    {
+        "id": "fab579a8.55a868",
+        "type": "ui_group",
+        "name": " AI Mode",
+        "tab": "cbe60e1a.85145",
+        "order": 1,
+        "disp": true,
+        "width": "4",
+        "collapse": false
+    },
+    {
+        "id": "313c03c1.be782c",
+        "type": "mqtt-broker",
+        "name": "localhost:1883",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": ""
+    },
+    {
+        "id": "1f34e858.de7018",
+        "type": "ui_group",
+        "name": "System Controls",
+        "tab": "cbe60e1a.85145",
+        "order": 4,
+        "disp": true,
+        "width": "4",
+        "collapse": true
+    },
+    {
+        "id": "f7f213b3.fdec4",
+        "type": "mqtt-broker",
+        "name": "localhost:1883",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": ""
+    },
+    {
+        "id": "a4d1387f.772c08",
+        "type": "ui_group",
+        "name": "Camera Viewer",
+        "tab": "cbe60e1a.85145",
+        "order": 2,
+        "disp": true,
+        "width": "13",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cbe60e1a.85145",
+        "type": "ui_tab",
+        "name": "AI Controller",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
