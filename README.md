@@ -22,8 +22,7 @@ Ultralytics YOLO8 is the easiest to use if you have an Nvida GPU and CUDA instal
 
 Ultralytics has recently released a YOLO10 model and OpenVINO support, I'm investigating this now, my next project will be to stop trying to support all the old stuff and simplify the installation and setup to only support CPU & TPU for MobilenetSSD_v2 initial detection and ultralytics YOLO for the verification, I'm basically waiting for the nest LTS version of OpenVINO.
 
-
-
+If you are comfortable with Docker and especially if you also run Home Assistant, take a look at Frigate: https://docs.frigate.video/ he has put tremendous effort into traditional NVR features and User Interface and has some YOLO support, my design goal was "set and forget" with only minumal user interface done in node-red, normally we only interact with it via the audio alerts when we are at home and via MMS and Email messages when we are away.
 
 
 
