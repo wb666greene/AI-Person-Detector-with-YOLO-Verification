@@ -3,7 +3,7 @@ This is the next evolution of https://github.com/wb666greene/AI-Person-Detector
 The major change was ading an intermideate output queue to verify detections with a YOLO model and removing the Raspberry Pi support (where YOLO is not viable at present).
 
 Here is an image sequence that shows the software in action, made from the detection images as a solicitor walks from my neighbor's yard, across the street, to my front door, leaves his flyer, and proceeds across my yard on to the next house. He walks across the field of view of multiple cameras with various resolutions of 4K, 5Mpixel, & 1080p:
-https://youtu.be/1kDxmbTq4P4
+https://youtu.be/XZYyE_WsRLI
 ![07_03_48 82_TPU_CliffwoodSouth_AI](https://github.com/wb666greene/AI-Person-Detector-with-YOLO-Verification/assets/31488806/26362151-1808-46cc-90b5-ca85973f2a60)
 
 
