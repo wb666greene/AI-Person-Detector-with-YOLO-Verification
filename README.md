@@ -34,6 +34,7 @@ For __OpenVINO YOLO4__, follow the instructions at: https://github.com/TNTWEN/Op
 
 For CPU initial detection you'll also need cv2 version "4.5.0-openvino" or "4.5.1-openvino" or "4.5.2-openvino" with MobilenetSSDv2cocoIR10.xml & MobilenetSSDv2cocoIR10.bin in a  mobilenet_ssd_v2/ folder. It has been a real long time since I did these conversion, if you have trouble, raise an isse and I'll try to help.
 
+&nbsp;
 
 Ultralytics has recently released a YOLO10 model and OpenVINO support, I'm investigating this now, my next project will be to stop trying to support all the old stuff and simplify the installation and setup to only support CPU & TPU for MobilenetSSD_v2 initial detection and ultralytics YOLO for the verification, I'm basically waiting for the nest LTS version of OpenVINO.
 
