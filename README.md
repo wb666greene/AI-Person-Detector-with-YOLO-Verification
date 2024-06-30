@@ -57,8 +57,9 @@ To show the sensitivity of the system and the "digital zoom" feature here is the
 
 &nbsp;
 
-#Some sample command lines:
-```TPU initial detection and YOLO8 verification on a "headless" system:
+##Some sample command lines:
+```
+TPU initial detection and YOLO8 verification on a "headless" system:
 python3 AI.py -d 0 -z -nsz -nTPU 1 -y8v -rtsp 19cams.rtsp 2>/dev/null >> ../detect/`/bin/date +%F`_AI.log &
 
 TPU initial detection and NCS2 YOLO4-OpenVINO verifation on headless system:
