@@ -52,10 +52,19 @@ If you are comfortable with Docker and especially if you also run Home Assistant
 
 Here is the minimal User Interface done with node-red and viewd in Chromium after it detected a couple walking in the street, this did not triger an alert since they were outside the 'electric fence' notification area:
 ![Node-red UI](https://github.com/wb666greene/AI-Person-Detector-with-YOLO-Verification/assets/31488806/b204c279-0804-43e8-bc96-0d410d5e6050)
-To show the sensitivity of the systema and the "digital zoom" feature here is the 4K frame for the image in the screen grab of the UI:
+To show the sensitivity of the system and the "digital zoom" feature here is the 4K frame for the image in the screen grab of the UI:
 ![16_36_33 38_TPU_HummingbirdRight_AI](https://github.com/wb666greene/AI-Person-Detector-with-YOLO-Verification/assets/31488806/5100f77d-2865-43e7-939b-c77c55a29489)
 
+&nbsp;
 
+#Some sample command lines:
+```TPU initial detection and YOLO8 verification on a "headless" system:
+python3 AI.py -d 0 -z -nsz -nTPU 1 -y8v -rtsp 19cams.rtsp 2>/dev/null >> ../detect/`/bin/date +%F`_AI.log &
+
+TPU initial detection and NCS2 YOLO4-OpenVINO verifation on headless system:
+source /opt/intel/openvino_2021.3.394/bin/setupvars.sh
+python3 AI.py -d 0 -z -nsz -nTPU 1 -y4ovv -myriad -cam 6onvif.txt -rtsp CW_door.rtsp  2>/dev/null >> ../detect/`/bin/date +%F`_AI.log &
+```
 
 
 
