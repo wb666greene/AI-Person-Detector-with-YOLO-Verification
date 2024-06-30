@@ -48,5 +48,10 @@ Ultralytics has recently released a YOLO10 model and OpenVINO support, I'm inves
 
 If you are comfortable with Docker and especially if you also run Home Assistant, take a look at Frigate: https://docs.frigate.video/ he has put tremendous effort into traditional NVR features and User Interface and has some YOLO support, my design goal was "set and forget" with only minumal user interface done in node-red, normally we only interact with it via the audio alerts when we are at home and via MMS and Email messages when we are away.
 
+&nbsp;
+
+Here is the minimal User Interface done with node-red and viewd in Chromium after it detected a couple walking in the street, this did not triger an alert since they were outside the 'electric fence' notification area:
+![Node-red UI](https://github.com/wb666greene/AI-Person-Detector-with-YOLO-Verification/assets/31488806/b204c279-0804-43e8-bc96-0d410d5e6050)
+
 
 
