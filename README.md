@@ -52,6 +52,12 @@ If you are comfortable with Docker and especially if you also run Home Assistant
 
 Here is the minimal User Interface done with node-red and viewd in Chromium after it detected a couple walking in the street, this did not triger an alert since they were outside the 'electric fence' notification area:
 ![Node-red UI](https://github.com/wb666greene/AI-Person-Detector-with-YOLO-Verification/assets/31488806/b204c279-0804-43e8-bc96-0d410d5e6050)
+To show the sensitivity of the systema and the "digital zoom" feature here is the 4K frame for the image in the screen grab of the UI:
+![16_36_33 38_TPU_HummingbirdRight_AI](https://github.com/wb666greene/AI-Person-Detector-with-YOLO-Verification/assets/31488806/5100f77d-2865-43e7-939b-c77c55a29489)
+
+
+
+
 
 
 
