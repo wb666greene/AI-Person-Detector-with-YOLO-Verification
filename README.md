@@ -16,14 +16,22 @@ and two false positives from out of focus blobs of bugs too close to the camera.
 
 Basic operation is that a thread is launched for each RTSP or ONVIF camera. The MobilenetSSD_v2 AI thread reads the queues round-robin, resizes the frame to 300x300 and if a person is detected a digital zoom is done on the detection which is resized to 300x300 and the inference repeated.  If it exceeds the detection threshold the zoomed image is resized for the YOLO model, currently Darknet YOLO4 ( https://github.com/AlexeyAB/darknet ), Darknet YOLO4 OpenVINO ( https://github.com/TNTWEN/OpenVINO-YOLOV4 ) or Ultralytics YOLO8 ( https://docs.ultralytics.com/ ) and written to an intermediate output queue that does the YOLO inference.  If this detection passes the "person detection" threshold it is written to the final output queue that is read by the main program and passed to the node-red system for "electric fence" and other ad-hoc validity filtering before sending audio and/or MMS and Email alerts depending on the alarm system mode.  All detections are saved independent of alarm system mode and the node-red runs a daily process to remove images older than 30 days.
 
-Unfortunately the models are too big to upload to github (and some may not be allowed), so you have to download them from the original source and convert to the OpenVINO format, if necessary, yourself.  Raise an issue if you need help.
-If you want to use MobilenetSSD_v1 I managed to upload the model to the previous version at: https://github.com/wb666greene/AI-Person-Detector you'll need MobileNetSSD/MobileNetSSD_deploy.prototxt, 
- & MobileNetSSD/MobileNetSSD_deploy.caffemodel.
- For TPU Mobilenet_SSD_v2 you'll need mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite & coco_labels.txt in a mobilenet_ssd_v2 folder from: https://raw.githubusercontent.com/google-coral/test_data/master/ssd_mobilenet_v2_coco_quant_postprocess_edgetpu.tflite and https://raw.githubusercontent.com/google-coral/test_data/master/coco_labels.txt
- 
 
 Ultralytics YOLO8 is the easiest to use if you have an Nvida GPU and CUDA installed.  Basic setup instructions are in the files: OV_LTS_Ubuntu22.04_setup.txt, Ubuntu22.04_setup_notes.txt, & ubuntu20.04_AI_setup.txt.  OpenVINO is very dynamic and the Movidius NCS2 support has been removed from newer versions, only OpenVINO 2021.3 oe 2021.4 work for the yolo4OpenvinoVerification_Thread.py.  OpenVINO verification works quite well with TPU or CPU MobilenetSSD_v2 initial detection and Intel GPU yolo4 verification -- a bottom of the line Lenovo i3 11th generation laptop ($200 closeout as "last years model) with integrated GPU and CPU initial detection suports four 4K cameras nicely.  The NCS2 can only do about 2fps for the YOLO verification but it has worked well for me on an i3 system with TPU to support five 720p and one 1080p ONVIF cameras along with one 5 Mpixel RTSP camera.
 
+Unfortunately the models are too big to upload to github (and some may not be allowed), so you have to download them from the original source and convert to the OpenVINO format, if necessary, yourself.  Raise an issue if you need help.
+If you want to use MobilenetSSD_v1 I managed to upload the model to the previous version at: https://github.com/wb666greene/AI-Person-Detector you'll need MobileNetSSD/MobileNetSSD_deploy.prototxt, 
+ & MobileNetSSD/MobileNetSSD_deploy.caffemodel.
+ 
+For TPU Mobilenet_SSD_v2 you'll need mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite & coco_labels.txt in a mobilenet_ssd_v2/ folder from: https://raw.githubusercontent.com/google-coral/test_data/master/ssd_mobilenet_v2_coco_quant_postprocess_edgetpu.tflite and https://raw.githubusercontent.com/google-coral/test_data/master/coco_labels.txt
+
+For the Ultralytics YOLO8 I believe the code is automatically downloaded if it is not where the __y8modelSTR__ specifies: 'yolo8/yolov8x.pt', you must also have CUDA installed.
+
+For Darknet YOLO4 you need to have CUDA installed and build the libdarknet.so library yourself (system specific) instructions at: https://github.com/AlexeyAB/darknet
+
+For OpenVINO YOLO4, follow the instructions at: https://github.com/TNTWEN/OpenVINO-YOLOV4 be aware that only OpenVINO 2021.3 and 2021.4 will work, you need to end up with frozen_darknet_yolov4_model.xml & frozen_darknet_yolov4_model.bin  in a yolo4_OpenVINO/fp16/ folder.
+
+ 
 Ultralytics has recently released a YOLO10 model and OpenVINO support, I'm investigating this now, my next project will be to stop trying to support all the old stuff and simplify the installation and setup to only support CPU & TPU for MobilenetSSD_v2 initial detection and ultralytics YOLO for the verification, I'm basically waiting for the nest LTS version of OpenVINO.
 
 If you are comfortable with Docker and especially if you also run Home Assistant, take a look at Frigate: https://docs.frigate.video/ he has put tremendous effort into traditional NVR features and User Interface and has some YOLO support, my design goal was "set and forget" with only minumal user interface done in node-red, normally we only interact with it via the audio alerts when we are at home and via MMS and Email messages when we are away.
