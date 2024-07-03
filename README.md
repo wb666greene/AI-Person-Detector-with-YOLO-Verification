@@ -66,7 +66,7 @@ TPU initial detection and NCS2 YOLO4-OpenVINO verification on headless system:
 source /opt/intel/openvino_2021.3.394/bin/setupvars.sh
 python3 AI.py -d 0 -nsz -nTPU 1 -y4ovv -myriad -cam 6onvif.txt -rtsp CW_door.rtsp  2>/dev/null >> ../detect/`/bin/date +%F`_AI.log &
 
-OpenVINO CPU initial detection and GPU YOLO4-OpenVINO verification on Lenovo ThinkPad:
+OpenVINO CPU initial detection and GPU YOLO4-OpenVINO verification on Lenovo IdeaPad:
 source /opt/intel/openvino_2021.4.752/bin/setupvars.sh
 python3 AI.py -d 1 -nsz -nt 1 -y4ovv -rtsp 4UHD.rtsp 2>/dev/null >> ../detect/`/bin/date +%F`_AI.log &
 ```
