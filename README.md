@@ -1,7 +1,7 @@
 # AI-Person-Detector-with-YOLO-Verification
 
 31JUL2024.  Consider this repo an archive of my system that has been running 24/7/365 since about September of 2022.
-I am now working on a "version 2" that drops support for marginal hardware that has no hope of running a YOLO verification step, and supports only YOLO8 or better using CUDA or OpenVINO 2024.2 (or newer until they break everything again with an update) and only supports OpenVINO CPU or the Coral TPU for initial MobilenetSSD_v2 person detection.
+I am now working on a "Version 2" that drops support for marginal hardware that has no hope of running a YOLO verification step, and supports only YOLO8 or better using CUDA or OpenVINO 2024.2 (or newer until they break everything again with an update) and only supports OpenVINO CPU or the Coral TPU for initial MobilenetSSD_v2 person detection.  Find "Version 2" at: https://github.com/wb666greene/AI-Person-Detector-with-YOLO-verification-Version-2
 
 
 This is the next evolution of https://github.com/wb666greene/AI-Person-Detector
