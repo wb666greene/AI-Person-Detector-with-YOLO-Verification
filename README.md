@@ -1,6 +1,11 @@
 # AI-Person-Detector-with-YOLO-Verification
+
+31JUL2024.  Consider this repo an archive of my system that has been running 24/7/365 since about September of 2022.
+I am now working on a "version 2" that drops support for marginal hardware that has no hope of running a YOLO verification step, and supports only YOLO8 or better using CUDA or OpenVINO 2024.2 (or newer until they break everything again with an update) and only supports OpenVINO CPU or the Coral TPU for initial MobilenetSSD_v2 person detection.
+
+
 This is the next evolution of https://github.com/wb666greene/AI-Person-Detector
-The major change was ading an intermideate output queue to verify detections with a YOLO model and removing the Raspberry Pi support (where YOLO is not viable at present).
+The major change was ading an intermediate output queue to verify detections with a YOLO model and removing the Raspberry Pi support (where YOLO is not viable at present).
 
 Here is an image sequence that shows the software in action, made from the detection images as a solicitor walks from my neighbor's yard, across the street, to my front door, leaves his flyer, and proceeds across my yard on to the next house. He walks across the field of view of multiple cameras with various resolutions of 4K, 5Mpixel, & 1080p:
 https://youtu.be/XZYyE_WsRLI
